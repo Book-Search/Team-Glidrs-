@@ -12,14 +12,31 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f4f7fb;
       color: #333;
+
+      /* Background image */
+      background: url('https://media.istockphoto.com/id/1415019639/vector/data-analytics-statistics-pie-chart-abstract-background.jpg?s=612x612&w=0&k=20&c=FLygOTsGsD4Xzh7hbr_BoAetkbyOxvyf7IuLYGSGjcA=') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
     }
+
+    /* Overlay for readability */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.75);
+      z-index: -1;
+    }
+
     header {
-      background: #007bff;
+      background: rgba(0, 123, 255, 0.9);
       color: white;
       padding: 20px;
       text-align: center;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     h1 {
       margin: 0;
@@ -32,16 +49,24 @@
       gap: 40px;
       flex-wrap: wrap;
     }
-    .form-box {
-      background: #fff;
+    .form-box, .chart-box {
+      background: rgba(255, 255, 255, 0.9);
       padding: 20px 25px;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+    }
+    .form-box {
       flex: 1;
       max-width: 350px;
       min-width: 280px;
     }
-    .form-box h2 {
+    .chart-box {
+      flex: 2;
+      text-align: center;
+      min-width: 320px;
+    }
+    .form-box h2, .chart-box h2 {
       margin-bottom: 15px;
       font-size: 20px;
       color: #007bff;
@@ -53,35 +78,35 @@
     }
     input[type="number"], input[type="file"] {
       width: 100%;
-      padding: 8px 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 14px;
+      background: #f9f9fc;
+      transition: 0.3s;
+    }
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0,123,255,0.3);
+      background: #fff;
     }
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
       font-weight: bold;
       border: none;
-      border-radius: 6px;
-      background: #007bff;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
       color: white;
       cursor: pointer;
       transition: 0.3s ease;
     }
     button:hover {
-      background: #0056b3;
-    }
-    .chart-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-      flex: 2;
-      text-align: center;
-      min-width: 320px;
+      background: linear-gradient(135deg, #0056b3, #0096d6);
+      transform: translateY(-2px);
     }
     canvas {
       max-width: 500px;
@@ -210,12 +235,10 @@
         const jsonData = XLSX.utils.sheet_to_json(worksheet, {defval: 0});
 
         // Expecting columns: Car, Bus, Bike, Walk (case-insensitive)
-        // Sum all rows for each mode
         let totals = { Car: 0, Bus: 0, Bike: 0, Walk: 0 };
 
         jsonData.forEach(row => {
           for (let key in totals) {
-            // Find matching key ignoring case
             for (let col in row) {
               if (col.toLowerCase() === key.toLowerCase()) {
                 let val = parseInt(row[col]);
